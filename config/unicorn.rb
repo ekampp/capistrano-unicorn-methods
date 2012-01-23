@@ -1,5 +1,5 @@
 worker_processes 5
-working_directory "/dana/data/imageupload/current"
+working_directory "/path/to/your/project/current"
 
 # This loads the application in the master process before forking
 # worker processes
@@ -11,13 +11,13 @@ timeout 30
 
 # This is where we specify the socket.
 # We will point the upstream Nginx module to this socket later on
-listen "/dana/data/imageupload/shared/sockets/unicorn.sock", :backlog => 64
+listen "/path/to/your/project/shared/sockets/unicorn.sock", :backlog => 64
 
-pid "/dana/data/imageupload/shared/pids/unicorn.pid"
+pid "/path/to/your/project/current/shared/pids/unicorn.pid"
 
 # Set the path of the log files inside the log folder of the testapp
-stderr_path "/dana/data/imageupload/shared/log/unicorn.stderr.log"
-stdout_path "/dana/data/imageupload/shared/log/unicorn.stdout.log"
+stderr_path "/path/to/your/project/current/log/unicorn.stderr.log"
+stdout_path "/path/to/your/project/current/log/unicorn.stdout.log"
 
 before_fork do |server, worker|
 # This option works in together with preload_app true setting
