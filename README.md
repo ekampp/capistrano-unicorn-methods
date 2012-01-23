@@ -7,11 +7,13 @@ The gem gives you access to the followig methods within the `unicorn.<method>` n
 * `unicorn.restart` restarts the unicorn server by moving the old one to <somename>.pid.oldbin and running a `unicorn.cleanup` command.
 * `unicorn.cleanup` will remove the master and worker processes associated with the <something>.pid.oldbin file.
 
+If you'r having trouble targeting the correct namespace you can alternatively run the commands prepended with a `top.` so it becomes e.g. `top.unicorn.start`.
+
 ## Requirements
 
-This gem requires a couple of other gems and config files:
-
 * `unicorn`
+
+It also relies on the `current_release` variable beeing present. This is part of capistrano's standard deploy schema, so there should be no problems.
 
 ## Customization
 
@@ -21,3 +23,4 @@ You can customize the gems behavior by setting any (or all) of the following opt
 * `unicorn_old_pid` contains the pid for the old server. Defaults to shared/pids/unicorn.pid.oldbin.
 * `unicorn_config` the path to the unicorn config file. Defaults to /path/to/your/app/config/unicorn.rb.
 * `unicorn_port` defines the port that unicorn should listen on. Defaults to 3000.
+* `use_bundler` defines if unicorn should be started through bundler. Defaults to true
