@@ -3,9 +3,9 @@ Capistrano::Configuration.instance.load do
   namespace :unicorn do
 
     # Lazy setting these variables, as they (might) depend on other settings
-    set(:unicorn_pid)     { fetch(:current_path)+"/tmp/pids/unicorn.pid" }
-    set(:unicorn_old_pid) { fetch(:current_path)+"/tmp/pids/unicorn.pid.oldbin" }
-    set(:unicorn_config)  { fetch(:current_path)+"/config/unicorn.rb" }
+    set(:unicorn_pid)     { "#{current_path}/tmp/pids/unicorn.pid" }
+    set(:unicorn_old_pid) { "#{current_path}/tmp/pids/unicorn.pid.oldbin" }
+    set(:unicorn_config)  { "#{current_path}/config/unicorn.rb" }
     set(:unicorn_port)    { 3000 }
     set(:use_bundler)     { true }
 
@@ -32,9 +32,6 @@ Capistrano::Configuration.instance.load do
 
     desc "Cleans up the old unicorn processes"
     task :cleanup do
-
-      puts "Cleaning up: \n\n#{unicorn_pid}\n"
-
       run "touch #{unicorn_old_pid}"
       pid = capture("cat #{unicorn_old_pid}").to_i
       run "kill -s QUIT #{pid}" if pid > 0
