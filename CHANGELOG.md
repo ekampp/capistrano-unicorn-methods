@@ -1,3 +1,7 @@
+## v 0.0.5: Writable pid dir
+
+Ensures that everybody can write to the pid dir
+
 ## v 0.0.4: Rails environment
 
 Added the -E option when starting unicorn. This will use the `rails_env` variable or default to 'production'.

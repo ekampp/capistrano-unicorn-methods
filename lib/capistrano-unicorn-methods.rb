@@ -36,6 +36,12 @@ Capistrano::Configuration.instance.load do
       run "touch #{unicorn_old_pid}"
       pid = capture("cat #{unicorn_old_pid}").to_i
       run "kill -s QUIT #{pid}" if pid > 0
+      ensure_writable_dirs
+    end
+
+    task :ensure_writable_dirs do
+      dir = File.dirname(unicorn_pid)
+      run "chmod a+w #{dir}"
     end
   end
 end
