@@ -1,3 +1,7 @@
+# Capistrano Unicorn Methods [![Build Status](https://secure.travis-ci.org/ekampp/capistrano-unicorn-methods.png)](http://travis-ci.org/ekampp/capistrano-unicorn-methods)
+
+Contains a namespace with methods for administrating the unicorn server through capistrano recipes.
+
 ## Usage
 
 The gem gives you access to the followig methods within the `unicorn.<method>` namespace.
