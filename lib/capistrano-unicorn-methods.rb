@@ -8,6 +8,7 @@ Capistrano::Configuration.instance.load do
     set(:unicorn_config)  { "#{current_path}/config/unicorn.rb" }
     set(:unicorn_port)    { 3000 }
     set(:use_bundler)     { true }
+    set(:rails_env)       { "production" }
 
     desc "Zero-downtime restart of Unicorn"
     task :restart do
@@ -20,7 +21,7 @@ Capistrano::Configuration.instance.load do
     desc "Starts unicorn"
     task :start do
       unicorn.cleanup
-      run "cd #{current_path} ; #{'bundle exec' if use_bundler} unicorn_rails -c #{unicorn_config} -D -p #{unicorn_port}"
+      run "cd #{current_path} ; #{'bundle exec' if use_bundler} unicorn_rails -c #{unicorn_config} -D -p #{unicorn_port} -E #{rails_env}"
     end
 
     desc "Stop unicorn"

@@ -23,6 +23,7 @@ It also relies on the `current_release` variable beeing present. This is part of
 
 You can customize the gems behavior by setting any (or all) of the following options within capistrano's configuration:
 
+* `rails_env` sets the environment that the server will run in. Defaults to `production`.
 * `unicorn_pid` indicates the path for the pid file. Defaults to shared/pids/unicorn.pid.
 * `unicorn_old_pid` contains the pid for the old server. Defaults to shared/pids/unicorn.pid.oldbin.
 * `unicorn_config` the path to the unicorn config file. Defaults to /path/to/your/app/config/unicorn.rb.
