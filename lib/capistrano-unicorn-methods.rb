@@ -2,11 +2,12 @@ require "capistrano-unicorn-methods/version"
 Capistrano::Configuration.instance.load do
   namespace :unicorn do
 
-    set(:unicorn_pid) { fetch(:current_path)+"/tmp/pids/unicorn.pid" }
+    # Lazy setting these variables, as they (might) depend on other settings
+    set(:unicorn_pid)     { fetch(:current_path)+"/tmp/pids/unicorn.pid" }
     set(:unicorn_old_pid) { fetch(:current_path)+"/tmp/pids/unicorn.pid.oldbin" }
-    set :unicorn_config, fetch(:current_path)+"/config/unicorn.rb"
-    set :unicorn_port, 3000
-    set :use_bundler, true
+    set(:unicorn_config)  { fetch(:current_path)+"/config/unicorn.rb" }
+    set(:unicorn_port)    { 3000 }
+    set(:use_bundler)     { true }
 
     desc "Zero-downtime restart of Unicorn"
     task :restart do
