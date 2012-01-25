@@ -1,3 +1,7 @@
+## v. 0.0.6: Loading issues
+
+You should now require the gem, and then load the methods into capistrano with `::CapistranoUnicornMethods.load`.
+
 ## v 0.0.5: Writable pid dir
 
 Ensures that everybody can write to the pid dir
