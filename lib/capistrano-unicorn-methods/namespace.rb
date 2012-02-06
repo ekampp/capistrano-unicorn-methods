@@ -18,27 +18,27 @@ Capistrano::Configuration.instance.load do
     end
 
     desc "Starts unicorn"
-    task :start do
+    task :start, :role => :app do
       unicorn.cleanup
       run "cd #{current_path} ; #{'bundle exec' if use_bundler} unicorn_rails -c #{unicorn_config} -D -p #{unicorn_port} -E #{rails_env}"
     end
 
     desc "Stop unicorn"
-    task :stop do
+    task :stop, :role => :app do
       run "touch #{unicorn_pid}"
       pid = capture("cat #{unicorn_pid}").to_i
       run "kill -s QUIT #{pid}" if pid > 0
     end
 
     desc "Cleans up the old unicorn processes"
-    task :cleanup do
+    task :cleanup, :role => :app do
       run "touch #{unicorn_old_pid}"
       pid = capture("cat #{unicorn_old_pid}").to_i
       run "kill -s QUIT #{pid}" if pid > 0
       ensure_writable_dirs
     end
 
-    task :ensure_writable_dirs do
+    task :ensure_writable_dirs, :role => :app do
       dir = File.dirname(unicorn_pid)
       run "chmod a+w #{dir}"
     end
