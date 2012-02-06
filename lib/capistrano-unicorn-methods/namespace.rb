@@ -18,20 +18,20 @@ Capistrano::Configuration.instance.load do
     end
 
     desc "Starts unicorn"
-    task :start, :role => :app do
+    task :start, :roles => :app do
       unicorn.cleanup
       run "cd #{current_path} ; #{'bundle exec' if use_bundler} unicorn_rails -c #{unicorn_config} -D -p #{unicorn_port} -E #{rails_env}"
     end
 
     desc "Stop unicorn"
-    task :stop, :role => :app do
+    task :stop, :roles => :app do
       run "touch #{unicorn_pid}"
       pid = capture("cat #{unicorn_pid}").to_i
       run "kill -s QUIT #{pid}" if pid > 0
     end
 
     desc "Cleans up the old unicorn processes"
-    task :cleanup, :role => :app do
+    task :cleanup, :roles => :app do
       run "touch #{unicorn_old_pid}"
       pid = capture("cat #{unicorn_old_pid}").to_i
       run "kill -s QUIT #{pid}" if pid > 0
