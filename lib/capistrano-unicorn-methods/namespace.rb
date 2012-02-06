@@ -55,6 +55,7 @@ Capistrano::Configuration.instance.load do
       logger.info "Cleaning out old unicorn server(s).."
       run "touch #{unicorn_old_pid}" do |channel, stream, data|
         pid = capture("cat #{unicorn_old_pid}").to_i
+        logger.debug "[#{channel[:host]}] Quitting unicorn process #{pid}" if pid > 0
         run "kill -s QUIT #{pid}" if pid > 0
       end
       ensure_writable_dirs
