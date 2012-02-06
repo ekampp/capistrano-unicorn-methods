@@ -16,9 +16,10 @@ Capistrano::Configuration.instance.load do
     desc "Zero-downtime restart of Unicorn"
     task :restart do
       unicorn.cleanup
-      run "touch #{unicorn_pid}"
-      pid = capture("cat #{unicorn_pid}").to_i
-      run "kill -s USR2 #{pid}" if pid > 0
+      run "touch #{unicorn_pid}" do |channel, stream, data|
+        pid = capture("cat #{unicorn_pid}").to_i
+        run "kill -s USR2 #{pid}" if pid > 0
+      end
     end
 
     #
