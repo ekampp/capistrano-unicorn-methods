@@ -16,10 +16,9 @@ Capistrano::Configuration.instance.load do
     desc "Zero-downtime restart of Unicorn"
     task :restart do
       unicorn.cleanup
-      run "touch #{unicorn_pid}" do |channel, stream, data|
-        pid = capture("cat #{unicorn_pid}").to_i
-        run "kill -s USR2 #{pid}" if pid > 0
-      end
+      run "touch #{unicorn_pid}"
+      pid = capture("cat #{unicorn_pid}").to_i
+      run "kill -s USR2 #{pid}" if pid > 0
     end
 
     #
@@ -53,11 +52,9 @@ Capistrano::Configuration.instance.load do
     desc "Cleans up the old unicorn processes"
     task :cleanup, :roles => :web do
       logger.info "Cleaning out old unicorn server(s).."
-      run "touch #{unicorn_old_pid}" do |channel, stream, data|
-        pid = capture("cat #{unicorn_old_pid}").to_i
-        logger.debug "[#{channel[:host]}] Quitting unicorn process #{pid}" if pid > 0
-        run "kill -s QUIT #{pid}" if pid > 0
-      end
+      run "touch #{unicorn_old_pid}"
+      pid = capture("cat #{unicorn_old_pid}").to_i
+      run "kill -s QUIT #{pid}" if pid > 0
       ensure_writable_dirs
     end
 
