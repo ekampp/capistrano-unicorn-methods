@@ -53,8 +53,7 @@ Capistrano::Configuration.instance.load do
     task :cleanup, :roles => :web do
       logger.info "Cleaning out old unicorn server(s).."
       run "touch #{unicorn_old_pid}"
-      pid = capture("cat #{unicorn_old_pid}").to_i
-      run "kill -s QUIT #{pid}" if pid > 0
+      run "kill -s QUIT #{capture("cat #{unicorn_old_pid}").to_i}" if pid > 0
       ensure_writable_dirs
     end
 
