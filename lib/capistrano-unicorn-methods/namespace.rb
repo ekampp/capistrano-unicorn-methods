@@ -5,6 +5,7 @@ Capistrano::Configuration.instance.load do
     set(:unicorn_pid)     { "#{current_path}/tmp/pids/unicorn.pid" }
     set(:unicorn_old_pid) { "#{current_path}/tmp/pids/unicorn.pid.oldbin" }
     set(:unicorn_config)  { "#{current_path}/config/unicorn.rb" }
+    set(:unicorn_socket)  { "#{shared_path}/system/unicorn.sock" }
     set(:unicorn_port)    { 3000 }
     set(:use_bundler)     { true }
     set(:rails_env)       { "production" }
@@ -17,18 +18,27 @@ Capistrano::Configuration.instance.load do
     task :restart do
       unicorn.cleanup
       run "touch #{unicorn_pid}"
-      pid = capture("cat #{unicorn_pid}").to_i
-      run "kill -s USR2 #{pid}" if pid > 0
+      find_servers(:roles => :app).each do |server|
+        pid = capture "cat #{unicorn_pid}", :hosts => [server]
+        run "kill -s USR2 #{pid.to_i}", :hosts => [server] if pid.to_i > 0
+      end
     end
 
     #
     # Starts the unicorn process(es)
     #
     desc "Starts unicorn"
-    task :start, :roles => :web do
-      logger.info "Starting unicorn server(s).."
+    task :start, :roles => :app do
       unicorn.cleanup
-      run "cd #{current_path} ; #{'bundle exec' if use_bundler} unicorn_rails -c #{unicorn_config} -D -p #{unicorn_port} -E #{rails_env}"
+      start_without_cleanup
+    end
+
+    #
+    # Starts the unicorn servers
+    desc "Starts the unicorn server without cleaning up from the previous instance"
+    task :start_without_cleanup, :roles => :app do
+      logger.info "Starting unicorn server(s).."
+      run "cd #{current_path}; #{'bundle exec' if use_bundler} unicorn_rails -c #{unicorn_config} -D#{" -p #{unicorn_port}" if unicorn_port} -E #{rails_env}"
     end
 
     #
@@ -38,11 +48,13 @@ Capistrano::Configuration.instance.load do
     # be down!
     #
     desc "Stop unicorn"
-    task :stop, :roles => :web do
+    task :stop, :roles => :app do
       logger.info "Stopping unicorn server(s).."
       run "touch #{unicorn_pid}"
-      pid = capture("cat #{unicorn_pid}").to_i
-      run "kill -s QUIT #{pid}" if pid > 0
+      find_servers(:roles => :app).each do |server|
+        pid = capture "cat #{unicorn_pid}", :hosts => [server]
+        run "kill -s QUIT #{pid.to_i}", :hosts => [server] if pid.to_i > 0
+      end
     end
 
     #
@@ -50,15 +62,12 @@ Capistrano::Configuration.instance.load do
     # command.
     #
     desc "Cleans up the old unicorn processes"
-    task :cleanup, :roles => :web do
+    task :cleanup, :roles => :app do
       logger.info "Cleaning out old unicorn server(s).."
       run "touch #{unicorn_old_pid}"
-      run "kill -s QUIT `cat #{unicorn_pid}`; true" do |channel, stream, data|
-        logger.debug "[#{channel[:host]}] #{data}"
-        if stream.to_s.downcase == "err"
-          logger.info "Unicorn on #{channel[:host]} is not running."
-          start
-        end
+      find_servers(:roles => :app).each do |server|
+        pid = capture "cat #{unicorn_old_pid}", :hosts => [server]
+        run "kill -s QUIT #{pid.to_i}", :hosts => [server] if pid.to_i > 0
       end
       ensure_writable_dirs
     end
@@ -69,7 +78,7 @@ Capistrano::Configuration.instance.load do
     #
     # NB! This is only intented for internal usage
     #
-    task :ensure_writable_dirs, :role => :web do
+    task :ensure_writable_dirs, :role => :app do
       dir = File.dirname(unicorn_pid)
       run "chmod a+w #{dir}"
     end
