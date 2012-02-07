@@ -53,8 +53,8 @@ Capistrano::Configuration.instance.load do
     task :cleanup, :roles => :web do
       logger.info "Cleaning out old unicorn server(s).."
       cmd = [
-        "touch #{unicorn_old_pid}"
-        "kill -s QUIT #{capture("cat #{unicorn_pid}")}"
+        "touch #{unicorn_old_pid}",
+        "cat #{unicorn_pid} | kill -s QUIT $0}"
       ]
       run cmd.join('; ')
       ensure_writable_dirs
