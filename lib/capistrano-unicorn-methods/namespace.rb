@@ -53,7 +53,9 @@ Capistrano::Configuration.instance.load do
     task :cleanup, :roles => :web do
       logger.info "Cleaning out old unicorn server(s).."
       run "touch #{unicorn_old_pid}"
-      run "cat #{unicorn_pid} | kill -s QUIT $0}"
+      run "kill -s QUIT `cat #{unicorn_pid}`; true" do |channel, stream, data|
+        logger.debug "[#{channel[:host]}] #{data}"
+      end
       ensure_writable_dirs
     end
 
