@@ -55,6 +55,10 @@ Capistrano::Configuration.instance.load do
       run "touch #{unicorn_old_pid}"
       run "kill -s QUIT `cat #{unicorn_pid}`; true" do |channel, stream, data|
         logger.debug "[#{channel[:host]}] #{data}"
+        if stream.to_s.downcase == "err"
+          logger.info "Unicorn on #{channel[:host]} is not running."
+          start
+        end
       end
       ensure_writable_dirs
     end
