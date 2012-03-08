@@ -73,6 +73,18 @@ Capistrano::Configuration.instance.load do
     end
 
     #
+    # This will clean up any old unicorn servers left behind by the USR2 kill
+    # command.
+    #
+    desc "Removes all pid files!"
+    task :remove_pids, :roles => :app do
+      logger.info "Removing pid files!"
+      run "touch #{unicorn_old_pid}; touch #{unicorn_pid}"
+      run "rm #{unicorn_old_pid}; rm #{unicorn_pid}"
+      ensure_writable_dirs
+    end
+
+    #
     # This will mod the pid dirs to ensure that future pid files can be written
     # to, and read from the dirs.
     #
