@@ -37,7 +37,6 @@ Capistrano::Configuration.instance.load do
     # Starts the unicorn servers
     desc "Starts the unicorn server without cleaning up from the previous instance"
     task :start_without_cleanup, :roles => :app do
-      logger.info "Starting unicorn server(s).."
       run "cd #{current_path}; #{'bundle exec' if use_bundler} unicorn_rails -c #{unicorn_config} -D#{" -p #{unicorn_port}" if unicorn_port} -E #{rails_env}"
     end
 
@@ -49,7 +48,6 @@ Capistrano::Configuration.instance.load do
     #
     desc "Stop unicorn"
     task :stop, :roles => :app do
-      logger.info "Stopping unicorn server(s).."
       run "touch #{unicorn_pid}"
       find_servers(:roles => :app).each do |server|
         pid = capture "cat #{unicorn_pid}", :hosts => [server]
@@ -63,7 +61,6 @@ Capistrano::Configuration.instance.load do
     #
     desc "Cleans up the old unicorn processes"
     task :cleanup, :roles => :app do
-      logger.info "Cleaning out old unicorn server(s).."
       run "touch #{unicorn_old_pid}"
       find_servers(:roles => :app).each do |server|
         pid = capture "cat #{unicorn_old_pid}", :hosts => [server]
@@ -78,7 +75,6 @@ Capistrano::Configuration.instance.load do
     #
     desc "Removes all pid files!"
     task :remove_pids, :roles => :app do
-      logger.info "Removing pid files!"
       run "touch #{unicorn_old_pid}; touch #{unicorn_pid}"
       run "rm #{unicorn_old_pid}; rm #{unicorn_pid}"
       ensure_writable_dirs
